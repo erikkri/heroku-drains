@@ -1,0 +1,48 @@
+{
+  "name": "heroku-drains",
+  "description": "Tool to add log drains to multiple Heroku apps.",
+  "version": "0.0.0",
+  "author": "Erik Kristensen",
+  "bin": {
+    "heroku-drains": "./bin/run"
+  },
+  "bugs": "https://github.com/erikkri/heroku-drains/issues",
+  "dependencies": {
+    "@oclif/command": "^1.5.6",
+    "@oclif/config": "^1.9.0",
+    "@oclif/plugin-help": "^2.1.4"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.19.4",
+    "globby": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src"
+  ],
+  "homepage": "https://github.com/erikkri/heroku-drains",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "src/index.js",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "heroku-drains",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "erikkri/heroku-drains",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  }
+}
