@@ -30,7 +30,6 @@ USAGE
 <!-- commands -->
 * [`heroku-drains add:datadog`](#heroku-drains-adddatadog)
 * [`heroku-drains add:sumologic`](#heroku-drains-addsumologic)
-* [`heroku-drains hello`](#heroku-drains-hello)
 * [`heroku-drains help [COMMAND]`](#heroku-drains-help-command)
 
 ## `heroku-drains add:datadog`
@@ -53,39 +52,23 @@ _See code: [src/commands/add/datadog.js](https://github.com/erikkri/heroku-drain
 
 ## `heroku-drains add:sumologic`
 
-Describe the command here
+Create and add Sumologic log drains to all apps in a Heroku team.
 
 ```
 USAGE
   $ heroku-drains add:sumologic
 
 OPTIONS
-  -n, --name=name  name to print
+  -c, --collector=collector  Sumologic collector which will be used.
+  -s, --category=category    Source category which these collectors will be added to.
+  -t, --team=team            Heroku team where sumologic drains will be added.
 
 DESCRIPTION
-  ...
-  Extra documentation goes here
+  This will create a Sumologic "HTTP Logs and Metrics" source for each of the apps in the Heroku team.
+  The URL for the corresponding source will be added as a log drain to the corresponding Heroku app.
 ```
 
 _See code: [src/commands/add/sumologic.js](https://github.com/erikkri/heroku-drains/blob/v0.0.0/src/commands/add/sumologic.js)_
-
-## `heroku-drains hello`
-
-Describe the command here
-
-```
-USAGE
-  $ heroku-drains hello
-
-OPTIONS
-  -n, --name=name  name to print
-
-DESCRIPTION
-  ...
-  Extra documentation goes here
-```
-
-_See code: [src/commands/hello.js](https://github.com/erikkri/heroku-drains/blob/v0.0.0/src/commands/hello.js)_
 
 ## `heroku-drains help [COMMAND]`
 
