@@ -1,15 +1,35 @@
 const {Command, flags} = require('@oclif/command')
 const Heroku = require('heroku-client')
 const heroku = new Heroku({ token: process.env.HEROKU_API_TOKEN })
-
+const axios = require('axios');
+const sumologic = axios.create({
+   baseURL: 'https://api.de.sumologic.com/',
+   auth: {
+     username: process.env.SUMOLOGIC_ACCESS_ID,
+     password: process.env.SUMOLOGIC_ACCESS_KEY
+   } 
+})
+ 
 class SumologicCommand extends Command {
   async run() {
     const {flags} = this.parse(SumologicCommand)
-    const team = flags.team || 'world'
-    this.log(`hello ${team} from /Users/erikrist/git/heroku-drains/src/commands/add/sumologic.js`)
+    const collectorName = flags.collector
+    sumologic.get('api/v1/collectors')
+      .then(response => {
+        const collectors = response.data.collectors;
+        console.log(collectors);
+        const collector = collectors.filter(coll => coll.name === collectorName)[0]
+        console.log(collector)
+        sumologic.get('/api/v1/collectors/' + collector.id + '/sources')
+          .then(response => {
+            const sources = response.data.sources;
+            console.log(sources)
+          })
+
+      })
     heroku.get('/apps').then(apps => {
-      apps.forEach((app) => this.log(app.name))
-    })
+        apps.forEach((app) => this.log(app.name))
+      })
   }
 }
 
