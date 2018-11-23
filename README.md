@@ -59,9 +59,9 @@ USAGE
   $ heroku-drains add:sumologic
 
 OPTIONS
-  -c, --collector=collector  Sumologic collector which will be used.
+  -c, --collector=collector  (required) Sumologic collector which will be used.
   -s, --category=category    Source category which these collectors will be added to.
-  -t, --team=team            Heroku team where sumologic drains will be added.
+  -t, --team=team            (required) Heroku team where sumologic drains will be added.
 
 DESCRIPTION
   This will create a Sumologic "HTTP Logs and Metrics" source for each of the apps in the Heroku team.

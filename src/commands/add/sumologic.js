@@ -19,16 +19,25 @@ class SumologicCommand extends Command {
       .then(response => {
         const collectors = response.data.collectors;
         console.log(collectors);
-        const collector = collectors.filter(coll => coll.name === collectorName)[0]
+        const filteredCollectors = collectors.filter(coll => coll.name === collectorName)
+        if (filteredCollectors.length < 1) {
+          console.log('No such collector.')
+          process.exit(1)
+        }
+        const collector = filteredCollectors[0]
         console.log(collector)
         sumologic.get('/api/v1/collectors/' + collector.id + '/sources')
           .then(response => {
-            const sources = response.data.sources;
+            const sources = response.data.sources
             console.log(sources)
           })
       })
     heroku.get('/teams/' + teamName + '/apps').then(apps => {
-        apps.forEach((app) => this.log(app.name))
+        apps.forEach((app) => console.log(app.name))
+      })
+      .catch(function (error) {
+        console.log("No such team.")
+        process.exit(1)
       })
   }
 }
@@ -39,8 +48,8 @@ The URL for the corresponding source will be added as a log drain to the corresp
 `
 
 SumologicCommand.flags = {
-  team: flags.string({char: 't', description: 'Heroku team where sumologic drains will be added.'}),
-  collector: flags.string({char: 'c', description: 'Sumologic collector which will be used.'}),
+  team: flags.string({char: 't', description: 'Heroku team where sumologic drains will be added.', required: true}),
+  collector: flags.string({char: 'c', description: 'Sumologic collector which will be used.', required: true}),
   category: flags.string({char: 's', description: 'Source category which these collectors will be added to.'}),
 }
 
