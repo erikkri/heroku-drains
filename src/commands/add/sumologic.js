@@ -3,7 +3,7 @@ const Heroku = require('heroku-client')
 const heroku = new Heroku({ token: process.env.HEROKU_API_TOKEN })
 const axios = require('axios');
 const sumologic = axios.create({
-   baseURL: 'https://api.de.sumologic.com/',
+   baseURL: process.env.SUMOLOGIC_URL || 'https://api.sumologic.com/',
    auth: {
      username: process.env.SUMOLOGIC_ACCESS_ID,
      password: process.env.SUMOLOGIC_ACCESS_KEY
@@ -14,6 +14,7 @@ class SumologicCommand extends Command {
   async run() {
     const {flags} = this.parse(SumologicCommand)
     const collectorName = flags.collector
+    const teamName = flags.team
     sumologic.get('api/v1/collectors')
       .then(response => {
         const collectors = response.data.collectors;
@@ -25,9 +26,8 @@ class SumologicCommand extends Command {
             const sources = response.data.sources;
             console.log(sources)
           })
-
       })
-    heroku.get('/apps').then(apps => {
+    heroku.get('/teams/' + teamName + '/apps').then(apps => {
         apps.forEach((app) => this.log(app.name))
       })
   }
