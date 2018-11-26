@@ -9,37 +9,38 @@ const sumologic = axios.create({
      password: process.env.SUMOLOGIC_ACCESS_KEY
    } 
 })
- 
+async function getCollector(name) {
+  console.log(name)
+  const response = await sumologic.get('api/v1/collectors')
+  const collectors = response.data.collectors;
+  console.log(collectors)
+  const filteredCollectors = collectors.filter(coll => coll.name === name)
+  if (filteredCollectors.length < 1) {
+    console.log('No such collector.')
+    process.exit(1)
+  }
+  const collector = filteredCollectors[0]
+  return collector
+}
+
+async function getSources(collectorId) {
+  const response = await sumologic.get('/api/v1/collectors/' + collectorId + '/sources')
+  return response.data.sources
+}
 class SumologicCommand extends Command {
   async run() {
     const {flags} = this.parse(SumologicCommand)
     const collectorName = flags.collector
     const teamName = flags.team
-    sumologic.get('api/v1/collectors')
-      .then(response => {
-        const collectors = response.data.collectors;
-        console.log(collectors);
-        const filteredCollectors = collectors.filter(coll => coll.name === collectorName)
-        if (filteredCollectors.length < 1) {
-          console.log('No such collector.')
-          process.exit(1)
-        }
-        const collector = filteredCollectors[0]
-        console.log(collector)
-        sumologic.get('/api/v1/collectors/' + collector.id + '/sources')
-          .then(response => {
-            const sources = response.data.sources
-            console.log(sources)
-          })
-      })
-    heroku.get('/teams/' + teamName + '/apps').then(apps => {
-        apps.forEach((app) => console.log(app.name))
-      })
-      .catch(function (error) {
-        console.log("No such team.")
-        process.exit(1)
-      })
-  }
+    const collector = await getCollector(collectorName)
+    const sources = await getSources(collector.id)
+    console.log(sources)
+    const apps = await heroku.get('/teams/' + teamName + '/apps')
+    apps.forEach((app) => {
+      console.log(app.name)
+      const appSource = sources.filter(source => source.name === app.name)
+    })
+   }
 }
 
 SumologicCommand.description = `Create and add Sumologic log drains to all apps in a Heroku team.
