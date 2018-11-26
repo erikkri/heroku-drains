@@ -9,6 +9,7 @@ const sumologic = axios.create({
      password: process.env.SUMOLOGIC_ACCESS_KEY
    } 
 })
+
 async function getCollector(name) {
   console.log(name)
   const response = await sumologic.get('api/v1/collectors')
@@ -27,6 +28,14 @@ async function getSources(collectorId) {
   const response = await sumologic.get('/api/v1/collectors/' + collectorId + '/sources')
   return response.data.sources
 }
+
+async function createSource(name) {
+  console.log('Creating source with name: ' + name)
+}
+
+async function addDrain(appName, sourceURL) {
+  console.log('Adding drain for ' + appName + ' with url: ' + sourceURL)
+}
 class SumologicCommand extends Command {
   async run() {
     const {flags} = this.parse(SumologicCommand)
@@ -39,8 +48,16 @@ class SumologicCommand extends Command {
     apps.forEach((app) => {
       console.log(app.name)
       const appSource = sources.filter(source => source.name === app.name)
+      if (appSource.length<1) {
+        // No source with that name, create it.
+        const newSource = createSource(app.name)
+        addDrain(app.name, "newSource.url")
+      } else {
+        const source = appSource[0];
+        addDrain(app.name, "source.url")
+      }
     })
-   }
+  }
 }
 
 SumologicCommand.description = `Create and add Sumologic log drains to all apps in a Heroku team.
