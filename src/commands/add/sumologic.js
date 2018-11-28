@@ -35,6 +35,8 @@ async function createSource(name) {
 
 async function addDrain(appName, sourceURL) {
   console.log('Adding drain for ' + appName + ' with url: ' + sourceURL)
+  const drain = await heroku.post('/apps/' + appName + '/log-drains', {body: {url: sourceURL}})
+  console.log(drain)
 }
 class SumologicCommand extends Command {
   async run() {
@@ -51,7 +53,7 @@ class SumologicCommand extends Command {
       if (appSource.length<1) {
         // No source with that name, create it.
         const newSource = createSource(app.name)
-        addDrain(app.name, "newSource.url")
+        addDrain(app.name, "http://example.com/drain")
       } else {
         const source = appSource[0];
         addDrain(app.name, "source.url")
