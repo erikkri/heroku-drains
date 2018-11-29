@@ -29,14 +29,28 @@ async function getSources(collectorId) {
   return response.data.sources
 }
 
-async function createSource(name) {
+async function createSource(name, collectorId) {
   console.log('Creating source with name: ' + name)
+  const response = await sumologic.post('/api/v1/collectors/' + collectorId + '/sources',{
+    "source" : {
+        "sourceType": "HTTP",
+        "name": name,
+        "messagePerRequest": true,
+        "multilineProcessingEnabled": false
+      }
+    })
+  console.log(response)
+  return response.data.source 
 }
 
 async function addDrain(appName, sourceURL) {
   console.log('Adding drain for ' + appName + ' with url: ' + sourceURL)
-  const drain = await heroku.post('/apps/' + appName + '/log-drains', {body: {url: sourceURL}})
-  console.log(drain)
+  try {
+    const drain = await heroku.post('/apps/' + appName + '/log-drains', {body: {url: sourceURL}})
+    console.log(drain)
+  } catch (error) {
+    console.log("Drain is already added.")
+  }
 }
 class SumologicCommand extends Command {
   async run() {
@@ -47,18 +61,18 @@ class SumologicCommand extends Command {
     const sources = await getSources(collector.id)
     console.log(sources)
     const apps = await heroku.get('/teams/' + teamName + '/apps')
-    apps.forEach((app) => {
+    for (const app of apps) {
       console.log(app.name)
       const appSource = sources.filter(source => source.name === app.name)
       if (appSource.length<1) {
         // No source with that name, create it.
-        const newSource = createSource(app.name)
-        addDrain(app.name, "http://example.com/drain")
+        const newSource = await createSource(app.name, collector.id)
+        await addDrain(app.name, newSource.url)
       } else {
         const source = appSource[0];
-        addDrain(app.name, "source.url")
+        await addDrain(app.name, source.url)
       }
-    })
+    }
   }
 }
 
