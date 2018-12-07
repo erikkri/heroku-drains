@@ -60,7 +60,7 @@ USAGE
 
 OPTIONS
   -c, --collector=collector  (required) Sumologic collector which will be used.
-  -s, --category=category    Source category which these collectors will be added to.
+  -s, --category=category    (required) Source category which these collectors will be added to.
   -t, --team=team            (required) Heroku team where sumologic drains will be added.
 
 DESCRIPTION
